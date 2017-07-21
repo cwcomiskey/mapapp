@@ -1,0 +1,18 @@
+Package: mapapp
+Type: Package
+Title: Create Interactive Heat Map Confidence Intervals
+Version: 0.1
+Author: Who wrote it
+Maintainer: Chris Comiskey <cwcomiskey@gmail.com>
+Description: Create dynamic, interactive heat map confidence intervals 
+    in Shiny. Readers sometimes struggle to understand static 
+    heat map confidence intervals, but readers tend to assimilate 
+    interactive intervals more easily.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports: dplyr,
+    fields,
+    ggplot2,
+    reshape2,
+    shiny
