@@ -1,9 +1,4 @@
 library(shiny)
-library(ggplot2)
-
-source("mapapp.R")
-source("process.R")
-
 
 shinyServer(function(input, output) {
 
