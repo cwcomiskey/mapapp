@@ -9,7 +9,7 @@ shinyServer(function(input, output) {
 
   output$HeatMapL <- renderPlot({
     with(CI_list[[input$"Pct CI" + 1]],
-         shiny_hmci_fcn(dataset = CI_list[[input$"Pct CI" + 1]], plb))
+         shiny_hmci_fcn(dataset = CI_list[[1]], plb))
     })
 
   output$HeatMap <- renderPlot({
@@ -18,7 +18,7 @@ shinyServer(function(input, output) {
 
   output$HeatMapU <- renderPlot({
     with(CI_list[[input$"Pct CI" + 1]],
-         shiny_hmci_fcn(dataset = CI_list[[input$"Pct CI" + 1]], pub))
+         shiny_hmci_fcn(dataset = CI_list[[1]], pub))
   })
 
 })
