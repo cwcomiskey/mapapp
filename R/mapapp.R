@@ -1,11 +1,11 @@
 library(ggplot2)
 
-# Point estimate heat map
+
 hmci <- function(dataset, stat){
   ggplot(aes(px, pz), data = dataset) +
   geom_tile(data = dataset, aes(fill = stat)) +
   coord_equal() + sz_fcn() + spec_fcn(g = FALSE)
-}
+} # Point estimate heat map
 
 inv_logit <- function(x){exp(x)/(1+exp(x))}
 
@@ -29,7 +29,7 @@ CI_builder <- function(containerList){ # CI List Builder
     )
   }
 return(containerList)
-  }
+  } # mega-list
 
 shiny_hmci_fcn <- function(dataset, bound){
 ggplot(aes(px, pz), data = dataset) +
@@ -37,7 +37,7 @@ ggplot(aes(px, pz), data = dataset) +
   coord_equal() +
   sz_fcn() + # sz_fcn{varyres}
   spec_fcn(g = FALSE) # # spec_fcn{varyres}
-} # Be sure to use: with(dataset, shiny_hmci_fcn(...))
+}
+# Usage: with(megalist[[i+1]], shiny_hmci_fcn(mega-list[[1]], fill))
+# "fill" from megalist[[i+1]]
 
-# test <- cbind.data.frame(CI_list[[1]], CI_list[[10]]) # Create DF: pts, bnds
-# with(test, shiny_hmci_fcn(dataset = test, plb))
