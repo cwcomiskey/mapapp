@@ -1,6 +1,5 @@
 library(ggplot2)
 
-
 hmci <- function(dataset, stat){
   ggplot(aes(px, pz), data = dataset) +
   geom_tile(data = dataset, aes(fill = stat)) +
@@ -29,7 +28,7 @@ CI_builder <- function(containerList){ # CI List Builder
     )
   }
 return(containerList)
-  } # mega-list
+  } # build mega-list
 
 shiny_hmci_fcn <- function(dataset, bound){
 ggplot(aes(px, pz), data = dataset) +

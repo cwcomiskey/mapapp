@@ -1,7 +1,7 @@
 library(shiny)
+library(ggplot2)
 
 shinyServer(function(input, output) {
-
 
    output$alpha_text <- renderText({
     # paste("You have selected a ", input$"Pct CI", "% confidence interval.")

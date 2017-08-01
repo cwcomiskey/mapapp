@@ -1,4 +1,4 @@
-# runApp("R") # b/c containing folder is "R"
+# shiny::runApp("R") # b/c containing folder is "R"
 
 # Load internal data
 # load("~/Desktop/ResearchRepo/mapapp/R/sysdata.rda")
@@ -14,5 +14,13 @@
 
 # devtools::use_build_ignore("devtools.R") # Exclude a specific file or directory from bundled version
 
-
 # devtools::document()
+
+# devtools::install_github('cwcomiskey/ResearchRepo','cwcomiskey')
+
+# install.packages("devtools")
+# devtools::install_github('cwcomiskey/mapapp')
+
+# library(mapapp)
+# CI_list <- CI_builder(CI_list)
+# runExample()

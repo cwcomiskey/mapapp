@@ -1,3 +1,5 @@
+library(ggplot2)
+
 mapit <- function(ABCE = ABCE) {
   ggplot2::ggplot(ABCE, aes(x = x, y = y)) +
   ggplot2::geom_tile(data = ABCE, aes(fill = statistic),
