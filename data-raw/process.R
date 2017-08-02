@@ -51,3 +51,5 @@ CI_builder <- function(containerList){ # CI mega-list Builder
   return(containerList)
 } # mega-list builder
 
+names(CI_list[[1]]) <- names(CIlist0[[1]])
+
