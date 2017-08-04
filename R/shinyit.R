@@ -7,8 +7,7 @@
 #' @return A heat map, representing \code{stat} with a color at each (\code{x}, \code{y}) location.
 #' @export
 #' @examples
-#' data(CIdata0)
-#' mapify(CIdata0[[1]])
+#' shinyit(CIdata)
 
 shinyit <- function(CIdata){
 
@@ -30,16 +29,15 @@ shinyApp(
   server = function(input, output) {
     # output$alpha_text <- renderText({ paste("You have selected a ", input$"Pct CI", "% confidence interval.")})
     output$HeatMapL <- renderPlot({
-      with(CIdata[[input$"Pct CI" + 1]], mapify(dataset = CIdata[[1]], plb))
+      mapify(dataset = CIdata[[1]], CIdata[[input$"Pct CI" + 1]]$lb)
     })
     output$HeatMap <- renderPlot({
-      with(CIdata[[1]], mapify(dataset = CIdata[[1]], stat1))
+      mapify(dataset = CIdata[[1]], CIdata[[1]]$stat)
     })
     output$HeatMapU <- renderPlot({
-      with(CIdata[[input$"Pct CI" + 1]], mapify(dataset = CIdata[[1]], pub))
+      mapify(dataset = CIdata[[1]], CIdata[[input$"Pct CI" + 1]]$ub)
     })
 
   }
   )
-
   }

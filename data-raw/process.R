@@ -19,7 +19,7 @@ preds <- predict(mod.polar, newdata = hitzone, se.fit = TRUE)
 
 inv_logit <- function(x){exp(x)/(1+exp(x))} # inv. logit fcn
 
-hitzone <- with( preds, mutate(hitzone, logit = fit, SE_logit = se.fit, phat = inv_logit(logit))) # for plotting
+hitzone <- with(preds, mutate(hitzone, logit = fit, SE_logit = se.fit, phat = inv_logit(logit))) # for plotting
 
 CI_list <- list(hitzone = dplyr::select( # create mega-list
   hitzone, px, pz, logit, SE_logit, phat)) # add first element
@@ -43,13 +43,13 @@ CI_builder <- function(containerList){ # CI mega-list Builder
     percent <- pct[i]         # For CI widths
     containerList[[i+1]] <- with(containerList[[1]], # use 1st element
         # Create "(lb, ub)_2xn" df as list elements
-        data.frame(plb = p_CI_lower(percent, logit, SE_logit),
-                   pub = p_CI_upper(percent, logit, SE_logit)
+        data.frame(lb = p_CI_lower(percent, logit, SE_logit),
+                   ub = p_CI_upper(percent, logit, SE_logit)
                                  )
     )
   }
   return(containerList)
 } # mega-list builder
 
-names(CI_list[[1]]) <- names(CIlist0[[1]])
+
 
