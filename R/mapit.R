@@ -9,7 +9,7 @@ mapit <- function(ABCE = ABCE) {
 
 spec_fcn <- function(g = TRUE){
   list(scale_fill_distiller(palette = "Spectral",
-                            limits = c(0, 0.167),
+                            # limits = c(0, 0.167),
                 guide = if(g)
                 guide_legend(title = expression(hat(p)[GLM]))
                 else guide = FALSE)

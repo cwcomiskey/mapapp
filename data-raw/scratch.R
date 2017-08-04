@@ -1,7 +1,13 @@
-hmci <- function(dataset, filler = stat1){
+ggplot(aes(x, y), data = d) +
+  geom_tile(data = d, aes(fill = stat0)) +
+  coord_equal() +
+  scale_fill_distiller(palette = "Spectral")
+
+mapify <- function(dataset){
   ggplot(aes(x, y), data = dataset) +
-  geom_tile(data = dataset, aes(fill = filler)) +
-  coord_equal() + sz_fcn() + spec_fcn(g = FALSE)
+    geom_tile(data = dataset, aes(fill = stat0)) +
+    coord_equal() +
+    scale_fill_distiller(palette = "Spectral")
 }
 
 hmci(CIlist0$df0, filler = stat1)
