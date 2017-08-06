@@ -27,15 +27,15 @@ shinyApp(
     ),
 
   server = function(input, output) {
-    # output$alpha_text <- renderText({ paste("You have selected a ", input$"Pct CI", "% confidence interval.")})
+    output$alpha_text <- renderText({ paste("This is the ",input$"Pct CI","% confidence interval layer.")})
     output$HeatMapL <- renderPlot({
-      mapify(dataset = CIdata[[1]], CIdata[[input$"Pct CI" + 1]]$lb)
+      mapify(dataset = CIdata[[1]], CIdata[[input$"Pct CI" + 1]]$lb, plot_title = "Lower Bound")
     })
     output$HeatMap <- renderPlot({
-      mapify(dataset = CIdata[[1]], CIdata[[1]]$stat)
+      mapify(dataset = CIdata[[1]], CIdata[[1]]$stat, plot_title = "Point Estimate")
     })
     output$HeatMapU <- renderPlot({
-      mapify(dataset = CIdata[[1]], CIdata[[input$"Pct CI" + 1]]$ub)
+      mapify(dataset = CIdata[[1]], CIdata[[input$"Pct CI" + 1]]$ub, plot_title = "Upper Bound")
     })
 
   }
