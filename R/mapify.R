@@ -5,6 +5,8 @@
 #' @param colors The statistic of interest represented by a color at each (\code{x}, \code{y}) location on the heat map; must be saved in global environment, or supplied in this format: dataset$colors
 #' @param plot_title The title for the plot, must be in quotes, defaults to "Heat Map"
 #' @param guide_title The title for the guide, must be in quotes, defaults to "Stat"
+#' @param lower lower bound for plot legend
+#' @param upper upper bound for plot legend
 #' @return A heat map of the statistic supplied to the argument \code{colors}.
 #' @export
 #' @examples
@@ -12,11 +14,12 @@
 #' d1 <- as.data.frame(d0)
 #' mapify(d1)
 
-mapify <- function(dataset, colors, plot_title = "Heat Map", guide_title = "Stat"){
+mapify <- function(dataset, colors, plot_title = "Heat Map", guide_title = "Stat", lower = 0, upper = 0.17){
 ggplot(aes(x, y), data = dataset) +
   geom_tile(aes(fill = colors)) +
   coord_equal() +
-  scale_fill_distiller(palette = "Spectral", name = guide_title) +
+  scale_fill_distiller(palette = "Spectral", name = guide_title,
+                       limits = c(0, 0.17)) +
   labs(title = plot_title) +
 
   theme(plot.title = element_text(hjust = 0.5))
