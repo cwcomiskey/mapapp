@@ -16,33 +16,38 @@ library(ggplot2)
 library(dplyr)
 ```
 
-Welcome to mapapp, a package for creating and introducing interactive heat map confidence intervals (HMCIs) in Shiny. This package provides two functions: `mapit` to create heat maps with the R package ggplot, and `shinyit` to create interactive HMCIs with the R package Shiny. Take a look! 
+Welcome to the mapapp vignette. If you don't have mapapp yet, you can download it from GitHub.
 
-```{r, fig.height=2, fig.width=2, eval = FALSE}
-mapapp::shinyit(CIdata)
+```{r, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
+install.packages("devtools")
+devtools::install_github('cwcomiskey/mapapp')
 ```
 
-Shiny and ggplot2 are capable of much more^[Pretty much anything your heart desires in a heat map or web application] than `mapit` and `shinyit` take advantage of. However, mapapp gives you a shortcut if you want a simple version. The hardest part of using mapapp is making sure your data is correctly formatted for `shinyit(...)` before you use it. 
+Make sure you have shiny, ggplot2, and dplyr installed for mapapp to work properly. This version of mapapp provides two functions: `mapit()` to create heat maps with the R package ggplot, and `shinyit()` to create interactive HMCIs with the R package Shiny. Take a look!
 
-## Formatting for `shinyit(...)
+```{r, fig.height=2, fig.width=2, eval = FALSE}
+mapapp::shinyit(listn)
+```
 
-Notice that every setting of the confidence interval (CI) toggle corresponds to two new heat maps---a lower and upper bound. This means `shinyit` needs the point estimate data, and data for all 99 additional CI heat maps. Here's the outline of the required format for the argument `shinyit`:
+Shiny and ggplot2 are create graphics with unlimited variety, but `mapit()` and `shinyit()` offer an expedient shortcut if you want to quickly create heat maps and launch interactive HMCIs. The key to using mapapp is data formatting. 
 
-* You need a list with 100 elements.
-* Each element is a data frame.
-* The first data frame includes three variables (columns):
+## Formatting for `shinyit()`
+
+Heat maps work by mapping a statistic of interest to a color at a set of (x,y) domain locations; call this number of locations $n$. The mapapp dataset `listn` uses $n = 3500$ locations. `shinyit()` needs data for the point estimate map, and for every CI level---1\% through 99\%. Accordingly, `shinyit()` requires a list with 100 elements, each a data frame with $n$ rows. 
+
+* The first data frame includes three variables/columns:
     + `x` - horizontal spatial coordinate
     + `y` - vertical spatial coordinate
-    + `stat` - heat map statistic for each (`x`,`y`) location
-* The remaining i = 1:99 elements are data frames that include two variables: 
-    + `lb` - lower bound for the i% CI.
-    + `ub` - upper bound for the i% CI
+    + `stat` - heat map statistic for each $(x,y)$ location
+* The remaining i = 1:99 data frames include two variables: 
+    + `lb` - lower bound for the i$\%$ CI.
+    + `ub` - upper bound for the i$\%$ CI
 
-Now we'll go through formatting your data for `shinyit(...)` in stages.
+There are four primary steps to format your data for `shinyit(...)`.
 
-## Create a List
+### Step 1: Create a List
 
-Say we start with a data frame such as `df0`, which comes with mapapp. First, we can create a list with `df0` as its first element.
+We start with mapapp data frame `df0`, and create a list called `fun` with `df0` as its first element.
 
 ```{r, eval = FALSE}
 head(df0)
@@ -50,34 +55,38 @@ fun <- list(df0)
 str(fun)
 ```
 
-## Calculate Confidence Bounds
+Now we need to add a data frame with the upper and lower bounds, for each of the 99 levels of confidence, to `fun`. 
 
-Next, we need to add all the confidence bounds to the list. I use a loop function to calculate my bounds, but you can do it however you feel comfortable. The basic algorithm structure should be approximately the following:
+### Step 2: Calculate Confidence Bounds
 
-* Create index i = 1:99
-* For an i = 1\% confidence interval, calculate the lower bounds (lb) and upper bounds (ub) for all points in your domain. The bounds should correspond to the coordinates in your original data frame df0.
-* Create $2 \times n$ data frame of bounds: (lb, ub). 
-* Save this data frame as element i + 1 of `fun`.
-* Repeat for i = 2:99, until `fun` is a 100 element list.
+You can add the bounds to your list however you wish, as long as each list element is a data frame of two columns named `lb` and `ub`. I use a loop function to calculate my bounds, with the following basic structure:
 
-In code, this algorithm will look something like this.
+1. Define index i = 1:99
+2. For an i = 1\% CI, calculate the lower bounds (lb) and upper bounds (ub) for all $n$ points in your domain. 
+3. Create $n \times 2$ data frame $[[\text{lb}, \text{ub}]]$, and save it as element i + 1 of `fun`. 
+4. Repeat for i = 2:99, until `fun` is a 100 element list.
+
+In code, this loop algorithm might look like this.
 
 ```{r, eval = FALSE}
   for(i in 1:99){
-    fun[[i+1]] <- data.frame(lb = calculate_lower(i, other_arguments), ub = calculate_upper(i, other_arguments))
+    fun[[i+1]] <- data.frame(
+      lb = calculate_lower(i, other_arguments), 
+      ub = calculate_upper(i, other_arguments)
+      )
   }
 ```
 
-I wrote `calculate_lower` (`_upper`), but you should insert the method or function you use to calculate the lower (upper) bound for each location. When you're done you'll have something like dataset `list0` that comes with mapapp. 
+`calculate_lower` and `calculate_upper` will be the method or function you use to calculate the lower and upper bounds for each confidence level. When you're done you'll have something like mapapp's dataset `list0`. 
 
 ```{r, eval = FALSE}
-head(list0[[1]]) 
-head(list0[[2]])
+head(list0[[1]]) # data frame with coordinates, point estimate
+head(list0[[2]]) # data frame with lower, upper bounds
 ```
 
-## Rename Coordinates and Point Estimates
+### Step 3: Rename Coordinates and Point Estimates
 
-Almost done! Now select and rename the coordinates and point estimates in the data frame serving as the first element of your list.
+Now select and rename the coordinates and point estimates in the first data frame of your list.
 
 ```{r}
 list0[[1]] <- dplyr::select(list0[[1]], x = px, y = pz, stat = phat)
@@ -85,6 +94,8 @@ head(list0[[1]])
 ```
 
 ## Create Interactive App
+
+With your data in this structure, `shinyit()` will create an interactive HMCI.
 
 ```{r, eval = FALSE}
 shinyit(listn)
