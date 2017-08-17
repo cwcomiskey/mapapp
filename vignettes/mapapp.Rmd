@@ -10,30 +10,30 @@ vignette: >
 ---
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-library(shiny)
+# library(shiny)
 library(mapapp)
-library(ggplot2)
-library(dplyr)
+# library(ggplot2)
+# library(dplyr)
 ```
 
 Welcome to the mapapp vignette. If you don't have mapapp yet, you can download it from GitHub.
 
-```{r, echo = FALSE, warning = FALSE, message = FALSE, eval = FALSE}
-install.packages("devtools")
+```{r, warning = FALSE, message = FALSE, eval = FALSE}
+# install.packages("devtools")
 devtools::install_github('cwcomiskey/mapapp')
 ```
 
-Make sure you have shiny, ggplot2, and dplyr installed for mapapp to work properly. This version of mapapp provides two functions: `mapit()` to create heat maps with the R package ggplot, and `shinyit()` to create interactive HMCIs with the R package Shiny. Take a look!
+This version of mapapp provides two functions: `heatmapper()` to create heat maps with the R package ggplot, and `shinyHMCI()` to create interactive heat map confidence intervals (HMCIs) with the R package Shiny. Take a look!
 
 ```{r, fig.height=2, fig.width=2, eval = FALSE}
-mapapp::shinyit(listn)
+mapapp::shinyHMCI(FinalList)
 ```
 
-Shiny and ggplot2 are create graphics with unlimited variety, but `mapit()` and `shinyit()` offer an expedient shortcut if you want to quickly create heat maps and launch interactive HMCIs. The key to using mapapp is data formatting. 
+Shiny and ggplot2 create graphics with unlimited variety, but `heatmapper()` and `shinyHMCI()` offer an expedient shortcut if you want to quickly create heat maps and launch interactive HMCIs. The key to using mapapp is data formatting. 
 
-## Formatting for `shinyit()`
+## Formatting for `shinyHMCI()`
 
-Heat maps work by mapping a statistic of interest to a color at a set of (x,y) domain locations; call this number of locations $n$. The mapapp dataset `listn` uses $n = 3500$ locations. `shinyit()` needs data for the point estimate map, and for every CI level---1\% through 99\%. Accordingly, `shinyit()` requires a list with 100 elements, each a data frame with $n$ rows. 
+Heat maps work by mapping a statistic of interest to a color at a set of (x,y) domain locations; call this number of locations $n$. The mapapp dataset `listn` uses $n = 3500$ locations. `shinyHMCI()` needs data for the point estimate map, and for every CI level---1\% through 99\%. Accordingly, `shinyHMCI()` requires a list with 100 elements, each a data frame with $n$ rows. 
 
 * The first data frame includes three variables/columns:
     + `x` - horizontal spatial coordinate
@@ -43,15 +43,15 @@ Heat maps work by mapping a statistic of interest to a color at a set of (x,y) d
     + `lb` - lower bound for the i$\%$ CI.
     + `ub` - upper bound for the i$\%$ CI
 
-There are four primary steps to format your data for `shinyit(...)`.
+There are four primary steps to format your data for `shinyHMCI(...)`.
 
 ### Step 1: Create a List
 
 We start with mapapp data frame `df0`, and create a list called `fun` with `df0` as its first element.
 
 ```{r, eval = FALSE}
-head(df0)
-fun <- list(df0)
+head(InitialDF)
+fun <- list(InitialDF)
 str(fun)
 ```
 
@@ -80,8 +80,8 @@ In code, this loop algorithm might look like this.
 `calculate_lower` and `calculate_upper` will be the method or function you use to calculate the lower and upper bounds for each confidence level. When you're done you'll have something like mapapp's dataset `list0`. 
 
 ```{r, eval = FALSE}
-head(list0[[1]]) # data frame with coordinates, point estimate
-head(list0[[2]]) # data frame with lower, upper bounds
+head(InitialList[[1]]) # data frame with coordinates, point estimate
+head(InitialList[[2]]) # data frame with lower, upper bounds
 ```
 
 ### Step 3: Rename Coordinates and Point Estimates
@@ -89,14 +89,20 @@ head(list0[[2]]) # data frame with lower, upper bounds
 Now select and rename the coordinates and point estimates in the first data frame of your list.
 
 ```{r}
-list0[[1]] <- dplyr::select(list0[[1]], x = px, y = pz, stat = phat)
-head(list0[[1]]) 
+InitialList[[1]] <- dplyr::select(InitialList[[1]], x = px, y = pz, stat = phat)
+head(InitialList[[1]]) 
 ```
 
 ## Create Interactive App
 
-With your data in this structure, `shinyit()` will create an interactive HMCI.
+With your data in this structure, `shinyHMCI()` will create an interactive HMCI.
 
 ```{r, eval = FALSE}
-shinyit(listn)
+shinyHMCI(FinalList)
 ```
+
+## Future Improvments
+
+Future versions of **mapapp** will offer a function similar to the following:
+
+* `all_in_one <- get_CI(model, x, y, levels)` - a function that creates, given the model you fit, the properly formatted confidence intervals, at the locations and levels the user specifies, so that `shinyHMCI(all_in_one)` creates a interactive HMCI in Shiny.

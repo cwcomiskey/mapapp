@@ -14,9 +14,9 @@
 # devtools::use_package("shiny") # add dependency to DESCRIPTION file
   # --> Refer to functions with package::fun()
 
-# devtools::use_data(hitter, hitzone, internal = TRUE, overwrite = TRUE) # add `hitter` to data/
-# devtools::use_data(df0, list0, listn, overwrite = TRUE)
-# devtools::use_data(CIdata0, overwrite = TRUE)
+# devtools::use_data(FinalList, InitialDF, InitialList, internal = FALSE, overwrite = TRUE) # add `hitter` to data/
+# devtools::use_data(hitter, overwrite = TRUE)
+# devtools::use_data(initial_df, initial_list, final_list, overwrite = TRUE)
 
 # devtools::use_build_ignore("mapit.R") # Exclude file or directory from bundled version
 
@@ -25,6 +25,7 @@
 # install.packages("devtools")
 # devtools::install_github('cwcomiskey/mapapp')
 # library(mapapp)
+# shinyit(listn)
 
 # test <- function(x = 5){x + 10}
 # test()
