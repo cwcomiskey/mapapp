@@ -26,7 +26,7 @@ devtools::install_github('cwcomiskey/mapapp')
 This version of mapapp provides two functions: `heatmapper()` to create heat maps with the R package ggplot, and `shinyHMCI()` to create interactive heat map confidence intervals (HMCIs) with the R package Shiny. Take a look!
 
 ```{r, fig.height=2, fig.width=2, eval = FALSE}
-mapapp::shinyHMCI(FinalList)
+shinyHMCI(FinalList)
 ```
 
 Shiny and ggplot2 create graphics with unlimited variety, but `heatmapper()` and `shinyHMCI()` offer an expedient shortcut if you want to quickly create heat maps and launch interactive HMCIs. The key to using mapapp is data formatting. 
@@ -51,8 +51,8 @@ We start with mapapp data frame `df0`, and create a list called `fun` with `df0`
 
 ```{r, eval = FALSE}
 head(InitialDF)
-fun <- list(InitialDF)
-str(fun)
+container <- list(InitialDF)
+str(container)
 ```
 
 Now we need to add a data frame with the upper and lower bounds, for each of the 99 levels of confidence, to `fun`. 
@@ -70,7 +70,7 @@ In code, this loop algorithm might look like this.
 
 ```{r, eval = FALSE}
   for(i in 1:99){
-    fun[[i+1]] <- data.frame(
+    container[[i+1]] <- data.frame(
       lb = calculate_lower(i, other_arguments), 
       ub = calculate_upper(i, other_arguments)
       )
@@ -103,6 +103,6 @@ shinyHMCI(FinalList)
 
 ## Future Improvments
 
-Future versions of **mapapp** will offer a function similar to the following:
+A future version of **mapapp** will offer a function similar to the following:
 
 * `all_in_one <- get_CI(model, x, y, levels)` - a function that creates, given the model you fit, the properly formatted confidence intervals, at the locations and levels the user specifies, so that `shinyHMCI(all_in_one)` creates a interactive HMCI in Shiny.
