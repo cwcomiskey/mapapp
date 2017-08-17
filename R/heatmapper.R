@@ -10,8 +10,7 @@
 #' @return A heat map of the statistic supplied to the argument \code{colors}.
 #' @export
 #' @examples
-#' dat <- FinalList[[1]]
-#' heatmapper(dat, colors = dat$stat)
+#' with(FinalList[[1]], heatmapper(FinalList[[1]], stat))
 
 heatmapper <- function(dataset, colors,
                     plot_title = "Heat Map",
