@@ -10,13 +10,15 @@
 #' @return A heat map of the statistic supplied to the argument \code{colors}.
 #' @export
 #' @examples
-#' with(FinalList[[1]], heatmapper(FinalList[[1]], colors = stat))
+#' dat <- FinalList[[1]]
+#' heatmapper(dat, colors = dat$stat)
 
 heatmapper <- function(dataset, colors,
                     plot_title = "Heat Map",
                     guide_title = "Stat",
                     lower = 0, upper = 0.17){
-ggplot2::ggplot(ggplot2::aes(x, y), data = dataset) +
+ggplot2::ggplot(data = dataset,
+                ggplot2::aes(dataset$x, dataset$y)) +
     ggplot2::geom_tile(ggplot2::aes(fill = colors)) +
     ggplot2::coord_equal() +
     ggplot2::scale_fill_distiller(palette = "YlOrRd",
