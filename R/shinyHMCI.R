@@ -7,7 +7,9 @@
 #' @return A heat map, representing \code{stat} with a color at each (\code{x}, \code{y}) location.
 #' @export
 #' @examples
+#' \dontrun{
 #' shinyHMCI(FinalList)
+#' }
 
 shinyHMCI <- function(CIdata){
 

@@ -16,5 +16,7 @@ A heat map, representing \code{stat} with a color at each (\code{x}, \code{y}) l
 This function creates an interactive heat map confidence interval in Shiny.
 }
 \examples{
+\dontrun{
 shinyHMCI(FinalList)
+}
 }

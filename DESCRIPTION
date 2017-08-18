@@ -8,7 +8,7 @@ Description: Create dynamic, interactive heat map confidence intervals
     in Shiny. Readers sometimes struggle to understand static 
     heat map confidence intervals, but readers tend to assimilate 
     interactive intervals more easily.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends: R (>= 2.10)
