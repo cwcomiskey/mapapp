@@ -27,5 +27,5 @@ A heat map of the statistic supplied to the argument \code{colors}.
 This function creates a basic heat map with ggplot(), for default use in shinyit().
 }
 \examples{
-with(FinalList[[1]], heatmapper(FinalList[[1]], stat))
+with(peralta[[1]], heatmapper(peralta[[1]], stat))
 }

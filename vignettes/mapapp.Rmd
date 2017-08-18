@@ -26,83 +26,100 @@ devtools::install_github('cwcomiskey/mapapp')
 This version of mapapp provides two functions: `heatmapper()` to create heat maps with the R package ggplot, and `shinyHMCI()` to create interactive heat map confidence intervals (HMCIs) with the R package Shiny. Take a look!
 
 ```{r, fig.height=2, fig.width=2, eval = FALSE}
-shinyHMCI(FinalList)
+shinyHMCI(peralta)
 ```
+This particular HCMI corresponds to estimates of success probability for baseball player Jhonny Peralta on swings at locations in vertical face of the hitting zone.
+
+Interactive heat map confidence intervals allow you to move through the confidence levels to explore the estimated surface in a way you can't acheive with static graphics.
 
 Shiny and ggplot2 create graphics with unlimited variety, but `heatmapper()` and `shinyHMCI()` offer an expedient shortcut if you want to quickly create heat maps and launch interactive HMCIs. The key to using mapapp is data formatting. 
 
 ## Formatting for `shinyHMCI()`
 
-Heat maps work by mapping a statistic of interest to a color at a set of (x,y) domain locations; call this number of locations $n$. The mapapp dataset `listn` uses $n = 3500$ locations. `shinyHMCI()` needs data for the point estimate map, and for every CI level---1\% through 99\%. Accordingly, `shinyHMCI()` requires a list with 100 elements, each a data frame with $n$ rows. 
+Heat maps work by mapping a statistic of interest to a color at a set of (x,y) domain locations; call the number of locations $n$. The mapapp dataset `peralta` uses $n =$ `r nrow(peralta[[1]])` locations arranged in a evenly spaced grid. `shinyHMCI()` needs data for the point estimate map, and for every CI level---1\% through 99\%. Accordingly, `shinyHMCI()` requires a list with 100 elements, each a data frame with $n$ rows. 
 
-* The first data frame includes three variables/columns:
+* The first data frame representes the point estimate surface.  It must include three variables/columns:
     + `x` - horizontal spatial coordinate
     + `y` - vertical spatial coordinate
-    + `stat` - heat map statistic for each $(x,y)$ location
-* The remaining i = 1:99 data frames include two variables: 
+    + `stat` - point estimate for each $(x,y)$ location
+* The remaining i = 1:99 data frames each represent the upper and lower surfaces of a confidence interval.  They must include two variables:
     + `lb` - lower bound for the i$\%$ CI.
     + `ub` - upper bound for the i$\%$ CI
+    
+    And each row must correspond to the same locations as in the first data frame.
 
-There are four primary steps to format your data for `shinyHMCI(...)`.
+There are four primary steps to format your data for `shinyHMCI()`. You'll generally start with a fitted model that estimates a parameter of interest over a spatial domain.  To explore the confidence interval surfaces in `shinyHMCI()` you'll need to construct the required point estimates and confidence intervals for a set of points (usually a grid) from this model and construct the list to hold them.  
 
-### Step 1: Create a List
+### Step 1: Calculate Point Estimates
 
-We start with mapapp data frame `df0`, and create a list called `fun` with `df0` as its first element.
+As an example I've included the data frame `peralta_ests` in `mapapp`:  
 
 ```{r, eval = FALSE}
-head(InitialDF)
-container <- list(InitialDF)
-str(container)
+head(peralta_ests)
 ```
 
-Now we need to add a data frame with the upper and lower bounds, for each of the 99 levels of confidence, to `fun`. 
+In `peralta_ests` the columns `px` and `pz` are equispaced locations on a spatial grid (the vertical face of the hitting zone).  `phat` represents a point estimate of the parameter of interest (the success probability of a swing at this location).  This particular set of point estimates was constructed with a call to `predict()` from a model fit with `glm()`.
+
+This data frame of point estimates is ideal for the first element in the required list, but must have the required names `x`, `y` and `stat`.
+
+```{r, eval = FALSE}
+point_estimates <- dplyr::select(peralta_ests, 
+  x = px, y = pz, stat = phat)
+```
+ 
+Now we need to a data frame with the upper and lower bounds, for each of the 99 levels of confidence. 
 
 ### Step 2: Calculate Confidence Bounds
 
-You can add the bounds to your list however you wish, as long as each list element is a data frame of two columns named `lb` and `ub`. I use a loop function to calculate my bounds, with the following basic structure:
+You can calculate the bounds however you wish, as long as each list element is a data frame of two columns named `lb` and `ub` and the row order matches that in `point_estimates`. I used a loop function to calculate my bounds, with the following basic structure:
 
 1. Define index i = 1:99
 2. For an i = 1\% CI, calculate the lower bounds (lb) and upper bounds (ub) for all $n$ points in your domain. 
-3. Create $n \times 2$ data frame $[[\text{lb}, \text{ub}]]$, and save it as element i + 1 of `fun`. 
-4. Repeat for i = 2:99, until `fun` is a 100 element list.
+3. Create $n \times 2$ data frame $[[\text{lb}, \text{ub}]]$, and save it as element i + 1 of `confidence_intervals`. 
+4. Repeat for i = 2:99, until `confidence_intervals` is a 99 element list.
 
 In code, this loop algorithm might look like this.
 
 ```{r, eval = FALSE}
   for(i in 1:99){
-    container[[i+1]] <- data.frame(
+    confidence_intervals[[i]] <- data.frame(
       lb = calculate_lower(i, other_arguments), 
       ub = calculate_upper(i, other_arguments)
       )
   }
 ```
 
-`calculate_lower` and `calculate_upper` will be the method or function you use to calculate the lower and upper bounds for each confidence level. When you're done you'll have something like mapapp's dataset `list0`. 
+`calculate_lower` and `calculate_upper` will be the method or function you use to calculate the lower and upper bounds for each confidence level. 
+
+As an example of the `confidence_intervals` object, take a look at the `peralta_cis` object provided with mapapp:
+```{r, results = "hide"}
+confidence_intervals <- peralta_cis
+str(confidence_intervals, max.level = 1)
+```
+
+Now we just need to put them together.
+
+### Step 3: Construct list
+
+To construct the list required for `shinyHCMI()` you simply combine the point estimates and list of confidence intervals:
 
 ```{r, eval = FALSE}
-head(InitialList[[1]]) # data frame with coordinates, point estimate
-head(InitialList[[2]]) # data frame with lower, upper bounds
+ests_and_cis <- c(list(point_estimates), 
+  confidence_intervals)
 ```
 
-### Step 3: Rename Coordinates and Point Estimates
+You might notice `ests_and_cis` is exactly the same as the object `peralta` from earlier.
 
-Now select and rename the coordinates and point estimates in the first data frame of your list.
-
-```{r}
-InitialList[[1]] <- dplyr::select(InitialList[[1]], x = px, y = pz, stat = phat)
-head(InitialList[[1]]) 
-```
-
-## Create Interactive App
+### Step 4: Create Interactive App
 
 With your data in this structure, `shinyHMCI()` will create an interactive HMCI.
 
 ```{r, eval = FALSE}
-shinyHMCI(FinalList)
+shinyHMCI(ests_and_cis)
 ```
 
 ## Future Improvments
 
 A future version of **mapapp** will offer a function similar to the following:
 
-* `all_in_one <- get_CI(model, x, y, levels)` - a function that creates, given the model you fit, the properly formatted confidence intervals, at the locations and levels the user specifies, so that `shinyHMCI(all_in_one)` creates a interactive HMCI in Shiny.
+* `all_in_one <- get_CI(model, x, y, levels)` - a function that creates, given the output from a modelling function, `model`, the properly formatted data structure, at the locations and levels the user specifies, so that `shinyHMCI(all_in_one)` creates a interactive HMCI in Shiny.
