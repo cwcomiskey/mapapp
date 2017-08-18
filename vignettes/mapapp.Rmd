@@ -26,15 +26,17 @@ devtools::install_github('cwcomiskey/mapapp')
 This version of mapapp provides two functions: `heatmapper()` to create heat maps with the R package ggplot, and `shinyHMCI()` to create interactive heat map confidence intervals (HMCIs) with the R package Shiny. Take a look!
 
 ```{r, fig.height=2, fig.width=2, eval = FALSE}
-shinyHMCI(FinalList)
+shinyHMCI(peralta)
 ```
+This particular HCMI corresponds to estimates of success probability for baseball player Jhonny Peralta on swings at locations in vertical face of the hitting zone.
+
 Interactive heat map confidence intervals allow you to move through the confidence levels to explore the estimated surface in a way you can't acheive with static graphics.
 
 Shiny and ggplot2 create graphics with unlimited variety, but `heatmapper()` and `shinyHMCI()` offer an expedient shortcut if you want to quickly create heat maps and launch interactive HMCIs. The key to using mapapp is data formatting. 
 
 ## Formatting for `shinyHMCI()`
 
-Heat maps work by mapping a statistic of interest to a color at a set of (x,y) domain locations; call the number of locations $n$. The mapapp dataset `FinalList` uses $n =$ `r nrow(FinalList[[1]])` locations arranged in a evenly spaced grid. `shinyHMCI()` needs data for the point estimate map, and for every CI level---1\% through 99\%. Accordingly, `shinyHMCI()` requires a list with 100 elements, each a data frame with $n$ rows. 
+Heat maps work by mapping a statistic of interest to a color at a set of (x,y) domain locations; call the number of locations $n$. The mapapp dataset `peralta` uses $n =$ `r nrow(peralta[[1]])` locations arranged in a evenly spaced grid. `shinyHMCI()` needs data for the point estimate map, and for every CI level---1\% through 99\%. Accordingly, `shinyHMCI()` requires a list with 100 elements, each a data frame with $n$ rows. 
 
 * The first data frame representes the point estimate surface.  It must include three variables/columns:
     + `x` - horizontal spatial coordinate
@@ -50,18 +52,18 @@ There are four primary steps to format your data for `shinyHMCI()`. You'll gener
 
 ### Step 1: Calculate Point Estimates
 
-As an example I've included the data frame `InitialDF` in `mapapp`:  
+As an example I've included the data frame `peralta_ests` in `mapapp`:  
 
 ```{r, eval = FALSE}
-head(InitialDF)
+head(peralta_ests)
 ```
 
-In `InitialDF` the columns `px` and `pz` are equispaced locations on a spatial grid.  `phat` represents a point estimate of the parameter of interest (the success probability of a swing at this location).  This particular set of point estimates was constructed with a call to `predict()` from a model fit with `glm()`.
+In `peralta_ests` the columns `px` and `pz` are equispaced locations on a spatial grid (the vertical face of the hitting zone).  `phat` represents a point estimate of the parameter of interest (the success probability of a swing at this location).  This particular set of point estimates was constructed with a call to `predict()` from a model fit with `glm()`.
 
 This data frame of point estimates is ideal for the first element in the required list, but must have the required names `x`, `y` and `stat`.
 
 ```{r, eval = FALSE}
-point_estimates <- dplyr::select(InitialDF, 
+point_estimates <- dplyr::select(peralta_ests, 
   x = px, y = pz, stat = phat)
 ```
  
@@ -89,9 +91,10 @@ In code, this loop algorithm might look like this.
 
 `calculate_lower` and `calculate_upper` will be the method or function you use to calculate the lower and upper bounds for each confidence level. 
 
-As an example of the `confidence_intervals` object, take a look at the `?` object provided with mapapp:
+As an example of the `confidence_intervals` object, take a look at the `peralta_cis` object provided with mapapp:
 ```{r, results = "hide"}
-str(InitialList[-1], max.level = 1)
+confidence_intervals <- peralta_cis
+str(confidence_intervals, max.level = 1)
 ```
 
 Now we just need to put them together.
@@ -103,8 +106,9 @@ To construct the list required for `shinyHCMI()` you simply combine the point es
 ```{r, eval = FALSE}
 ests_and_cis <- c(list(point_estimates), 
   confidence_intervals)
-str(ests_and_cis, max.level = 1)
 ```
+
+You might notice `ests_and_cis` is exactly the same as the object `peralta` from earlier.
 
 ### Step 4: Create Interactive App
 

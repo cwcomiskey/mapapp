@@ -25,37 +25,25 @@
 #'   \item{SE_logit}{Second model predicted value}
 #'   \item{phat}{Third model predicted value}
 #' }
-"InitialDF"
+"peralta_ests"
 
-#' List of 100 data frames
+#' List of 99 data frames
 #'
-#' The first element is the \code{InitialDF} data frame. The remaining 99 data frames provide upper and lower bounds for each confidence level.
+#' The 99 data frames provide upper and lower bounds for each confidence level associated with the point estimates in \code{\link{peralta_ests}}.
 #'
-#' @format A data frame with 9177 rows and 4 variables:
+#' @format A list of 99 data frames, the $i$th data frame corresponds to the $i$% CI with columns:
 #' \describe{
-#'   \item{px}{horizontal location}
-#'   \item{pz}{vertical location}
-#'   \item{logit}{First model predicted value}
-#'   \item{SE_logit}{Second model predicted value}
-#'   \item{phat}{Third model predicted value}
-#'   \item{lb}{Confidence level and location specific lower bound}
-#'   \item{ub}{Confidence level and location specific lower bound}
+#'   \item{lb}{Lower bound}
+#'   \item{ub}{Upper bound}
 #' }
-"InitialList"
+"peralta_cis"
 
-#' \code{InitialList} formatted for \code{shinyHMCI(...)}
+#' \code{peralta} formatted for \code{shinyHMCI(...)}
 #'
-#' This list is \code{InitialList} formatted appropriately for \code{shinyHMCI(...)}.
+#' This list combines \code{\link{peralta_ests}} and \code{\link{peralta_cis}} formatted appropriately for \code{shinyHMCI(...)}.
 #'
-#' @format A data frame with 9177 rows and 4 variables:
-#' \describe{
-#'   \item{x}{horizontal location}
-#'   \item{y}{vertical location}
-#'   \item{stat}{Statistic of interest}
-#'   \item{lb}{Confidence level and location specific lower bound}
-#'   \item{ub}{Confidence level and location specific lower bound}
-#' }
-"FinalList"
+#' @format A lists of 100 data frames.  Element one is \code{\link{peralta_ests}}, elements 2-100 are \code{\link{peralta_cis}}.
+"peralta"
 
 
 
